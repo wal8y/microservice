@@ -101,15 +101,7 @@ This repository also demonstrates a **multi-microservice distributed architectur
 All services are containerized and orchestrated via `docker-compose.yml`.
 
 #### Architecture Diagram (Conceptual)
-
-```mermaid
-flowchart LR
-  Client -->|HTTP| APIGW[API Gateway]
-  APIGW -->|/api/quran/* (REST)| Quran[Quran Service]
-  APIGW -->|/api/notifications/* (REST)| Notif[Notification Service]
-  Client -->|/auth/login (via Gateway)| APIGW
-  APIGW -->|/auth/login (REST)| Auth[Auth Service]
-```
+![Architecture Diagram](.github/workflows/digram.png)
 
 - **Client** talks only to the **API Gateway**.
 - **API Gateway** validates JWT tokens and enforces **authorization** (e.g., admin-only for notifications).
