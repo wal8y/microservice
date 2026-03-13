@@ -167,6 +167,7 @@ This will start:
 - **Auth Service** on `http://localhost:8001`
 - **Notification Service** on `http://localhost:8002`
 - **API Gateway** on `http://localhost:8003`
+- **Nginx reverse proxy** on `http://localhost/` (port 80)
 
 Example flow:
 
@@ -174,8 +175,8 @@ Example flow:
    - `POST http://localhost:8003/api/auth/login`
    - Body (form data): `username=alice&password=password`
    - Receive `access_token`.
-2. **Call Quran API through Gateway**:
-   - `GET http://localhost:8003/api/quran/chapters`
+2. **Call Quran API through Gateway (via Nginx)**:
+   - `GET http://localhost/api/quran/chapters`
    - Header: `Authorization: Bearer <access_token>`
 3. **Admin-only Notifications**:
    - Login as `admin` via step 1.
@@ -198,10 +199,12 @@ Each FastAPI service automatically exposes interactive API documentation (Swagge
 - **Quran Service**: `http://localhost:8000/docs`
 - **Auth Service**: `http://localhost:8001/docs`
 - **Notification Service**: `http://localhost:8002/docs`
-- **API Gateway**: `http://localhost:8003/docs`
+- **API Gateway (direct)**: `http://localhost:8003/docs`
+- **API Gateway (via Nginx)**: `http://localhost/docs`
 
 You can use these UIs to:
 
 - Inspect the OpenAPI schemas.
 - Try requests directly from the browser (including adding the `Authorization: Bearer <token>` header for secured routes).
 
+Nginx is used here as an **edge reverse proxy**, forwarding all incoming HTTP traffic on port 80 to the API Gateway container. In a real production setup you could extend this to handle HTTPS termination, static assets, rate limiting, etc.
