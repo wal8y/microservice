@@ -1,0 +1,51 @@
+version: "3.9"
+
+services:
+  quran-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: quran-service
+    environment:
+      - ENVIRONMENT=production
+    ports:
+      - "8000:8000"
+
+  auth-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: auth-service
+    command: uvicorn auth_service.main:app --host 0.0.0.0 --port 8001
+    environment:
+      - AUTH_SECRET_KEY=changeme-in-production
+    ports:
+      - "8001:8001"
+
+  notification-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: notification-service
+    command: uvicorn notification_service.main:app --host 0.0.0.0 --port 8002
+    ports:
+      - "8002:8002"
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: api-gateway
+    command: uvicorn api_gateway.main:app --host 0.0.0.0 --port 8003
+    environment:
+      - AUTH_SERVICE_URL=http://auth-service:8001
+      - QURAN_SERVICE_URL=http://quran-service:8000
+      - NOTIFICATION_SERVICE_URL=http://notification-service:8002
+      - AUTH_SECRET_KEY=changeme-in-production
+    depends_on:
+      - quran-service
+      - auth-service
+      - notification-service
+    ports:
+      - "8003:8003"
+
